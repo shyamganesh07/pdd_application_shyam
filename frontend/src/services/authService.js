@@ -1,5 +1,5 @@
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
-import { signInWithCredential, GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOut } from 'firebase/auth';
+import { signInWithCredential, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut as firebaseSignOut } from 'firebase/auth';
 import { auth } from '../firebase';
 
 export const isCapacitor = () => {
@@ -36,8 +36,18 @@ export const authService = {
         // Web PWA popup sign-in
         const provider = new GoogleAuthProvider();
         provider.setCustomParameters({ prompt: 'select_account' });
-        const userCredential = await signInWithPopup(auth, provider);
-        idToken = await userCredential.user.getIdToken(true);
+        try {
+          const userCredential = await signInWithPopup(auth, provider);
+          idToken = await userCredential.user.getIdToken(true);
+        } catch (popupError) {
+          if (popupError.code === 'auth/popup-blocked') {
+            console.warn('[AuthService] Popup blocked. Falling back to redirect flow.');
+            await signInWithRedirect(auth, provider);
+            // The browser will redirect, so we return a promise that never resolves
+            return new Promise(() => {});
+          }
+          throw popupError;
+        }
       }
       
       // Verify token with backend
