@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeMind Design Portfolio</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+        :root {
+            --primary: #1a1a1a;
+            --accent: #2563eb;
+            --text: #374151;
+            --bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            background: #f3f4f6;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 10mm auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            box-sizing: border-box;
+            page-break-after: always;
+        }
+
+        .header {
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24pt;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header .project-info {
+            text-align: right;
+            font-size: 10pt;
+            color: #666;
+        }
+
+        .section-title {
+            font-size: 18pt;
+            font-weight: 600;
+            color: var(--accent);
+            margin-top: 30px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent);
+            padding-left: 15px;
+        }
+
+        .image-container {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 180mm;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+        }
+
+        .image-caption {
+            margin-top: 15px;
+            font-size: 11pt;
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .image-description {
+            font-size: 9pt;
+            color: #666;
+            margin-top: 5px;
+            max-width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20mm;
+            left: 20mm;
+            right: 20mm;
+            font-size: 8pt;
+            color: #999;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        @media print {
+            body {
+                background: none;
+            }
+
+            .page {
+                margin: 0;
+                box-shadow: none;
+            }
+        }
+
+        /* Grid for multiple images per page if needed */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- PAGE 1: COVER -->
+    <div class="page"
+        style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+        <h1 style="font-size: 48pt; margin-bottom: 10px; color: var(--primary);">TRADEMIND</h1>
+        <h2 style="font-size: 18pt; font-weight: 300; letter-spacing: 5px; margin-bottom: 50px;">DESIGN & VISUALIZATION
+            PORTFOLIO</h2>
+        <div style="width: 100px; height: 2px; background: var(--accent); margin-bottom: 50px;"></div>
+        <p style="font-size: 12pt; color: #666;">A Comprehensive Collection of 2D Architectural Sketches<br>and 3D
+            Conceptual Renders for Mobile Application Development</p>
+        <div class="footer">
+            <span>© 2026 TRADEMIND AI CORE</span>
+            <span>DESIGN SPECIFICATION v1.0</span>
+        </div>
+    </div>
+    <!-- PAGE 2: 2D SKETCHES 1-2 -->
+    <div class="page">
+        <div class="header">
+            <h1>2D SKETCHES</h1>
+            <div class="project-info">TRADEMIND MOBILE | INTERFACE ARCHITECTURE</div>
+        </div>
+
+        <div class="image-container">
+            <img src="file:///C:/Users/ganes/.gemini/antigravity/brain/2958adc3-fe53-473d-a63b-dfbd6f5cdfe0/dashboard_2d_sketch_1778744124922.png"
+                alt="Dashboard">
+            <div class="image-caption">01. Main Dashboard HUD</div>
+            <div class="image-description">High-level wireframe focusing on the GARCH-LSTM volatility engine and user
+                navigation hierarchy.</div>
+        </div>
+        <div class="image-container">
+            <img src="file:///C:/Users/ganes/.gemini/antigravity/brain/2958adc3-fe53-473d-a63b-dfbd6f5cdfe0/psychology_2d_sketch_1778744168792.png"
+                alt="Psychology">
+            <div class="image-caption">02. Crowd Psychology Module</div>
+            <div class="image-description">Visualization of sentiment analysis metrics and behavioral market indicators.
+            </div>
+        </div>
+        <div class="footer"><span>PAGE 02</span></div>
+    </div>
+    <!-- PAGE 3: 2D SKETCHES 3-4 -->
+    <div class="page">
+        <div class="header">
+            <h1>2D SKETCHES</h1>
+            <div class="project-info">TRADEMIND MOBILE | INTERFACE ARCHITECTURE</div>
+        </div>
+
+        <div class="image-container">
+            <img src="file:///C:/Users/ganes/.gemini/antigravity/brain/2958adc3-fe53-473d-a63b-dfbd6f5cdfe0/academy_2d_sketch_1778744540282.png"
+                alt="Academy">
+            <div class="image-caption">03. Institutional Academy</div>
+            <div class="image-description">Learning paths and progress tracking for algorithmic trading education.</div>
+        </div>
+        <div class="image-container">
+            <img src="file:///C:/Users/ganes/.gemini/antigravity/brain/2958adc3-fe53-473d-a63b-dfbd6f5cdfe0/strategy_lab_2d_sketch_1778744559134.png"
+                alt="Strategy Lab">
+            <div class="image-caption">04. AI Strategy Simulation Lab</div>
+            <div class="image-description">Interface for configuring and backtesting custom AI trading models.</div>
+        </div>
+        <div class="footer"><span>PAGE 03</span></div>
+    </div>
+    <!-- PAGE 4: 2D SKETCHES 5-6 -->
+    <div class="page">
+        <div class="header">
+            <h1>2D SKETCHES</h1>
+            <div class="project-info">TRADEMIND MOBILE | INTERFACE ARCHITECTURE</div>
+        </div>
+
+        <div class="image-container">
+            <img src="file:///C:/Users/ganes/.gemini/antigravity/brain/2958adc3-fe53-473d-a63b-dfbd6f5cdfe0/journal_2d_sketch_1778744583380.png"
+                alt="Journal">
+            <div class="image-caption">05. Performance Journal</div>
+            <div class="image-description">Historical trade logging with psychological state annotation.</div>
+        </div>
+        <div class="image-container">
+            <img src="file:///C:/Users/ganes/.gemini/antigravity/brain/2958adc3-fe53-473d-a63b-dfbd6f5cdfe0/settings_2d_sketch_1778744602586.png"
+                alt="Settings">
+            <div class="image-caption">06. System Configuration</div>
+            <div class="image-description">User profile management and API security settings.</div>
+        </div>
+        <div class="footer"><span>PAGE 04</span></div>
+    </div>
+    <!-- PAGE 5: 3D RENDERS 1-2 -->
+    <div class="page">
+        <div class="header">
+            <h1>3D VISUALIZATION</h1>
+            <div class="project-info">TRADEMIND MOBILE | CONCEPTUAL RENDERS</div>
+        </div>
+
+        <div class="image-container">
+            <img src="file:///C:/Users/ganes/.gemini/antigravity/brain/2958adc3-fe53-473d-a63b-dfbd6f5cdfe0/mobile_ui_3d_sketch_1778744147645.png"
+                alt="3D UI">
+            <div class="image-caption">07. Layered UI Stack (3D Sketch)</div>
+            <div class="image-description">An exploded view of the mobile interface showing the hierarchy of analytical
+                layers.</div>
+        </div>
+        <div class="image-container">
+            <img src="file:///C:/Users/ganes/.gemini/antigravity/brain/2958adc3-fe53-473d-a63b-dfbd6f5cdfe0/architecture_3d_sketch_1778744190036.png"
+                alt="3D Arch">
+            <div class="image-caption">08. System Core Architecture (3D Sketch)</div>
+            <div class="image-description">Isometric representation of the data flow between market feeds and the mobile
+                client.</div>
+        </div>
+        <div class="footer"><span>PAGE 05</span></div>
+    </div>
+    <!-- PAGE 6: 3D RENDERS 3-4 -->
+    <div class="page">
+        <div class="header">
+            <h1>3D VISUALIZATION</h1>
+            <div class="project-info">TRADEMIND MOBILE | CONCEPTUAL RENDERS</div>
+        </div>
+
+        <div class="image-container">
+            <img src="file:///C:/Users/ganes/.gemini/antigravity/brain/2958adc3-fe53-473d-a63b-dfbd6f5cdfe0/knowledge_graph_3d_render_1778744626873.png"
+                alt="Knowledge Graph">
+            <div class="image-caption">09. Neural Knowledge Graph</div>
+            <div class="image-description">Digital twin of the market data relationships, rendered for high-end
+                visualization.</div>
+        </div>
+        <div class="image-container">
+            <img src="file:///C:/Users/ganes/.gemini/antigravity/brain/2958adc3-fe53-473d-a63b-dfbd6f5cdfe0/trading_dna_3d_render_1778744657434.png"
+                alt="DNA">
+            <div class="image-caption">10. Behavioral Trading DNA</div>
+            <div class="image-description">Symbolic representation of the user's trading psychological profile.</div>
+        </div>
+        <div class="footer"><span>PAGE 06</span></div>
+    </div>
+    <!-- PAGE 7: 3D RENDERS 5-6 -->
+    <div class="page">
+        <div class="header">
+            <h1>3D VISUALIZATION</h1>
+            <div class="project-info">TRADEMIND MOBILE | CONCEPTUAL RENDERS</div>
+        </div>
+
+        <div class="image-container">
+            <img src="file:///C:/Users/ganes/.gemini/antigravity/brain/2958adc3-fe53-473d-a63b-dfbd6f5cdfe0/market_cube_3d_render_1778744674715.png"
+                alt="Market Cube">
+            <div class="image-caption">11. Market Intelligence Cube</div>
+            <div class="image-description">Multi-dimensional analysis of price, volume, and sentiment data.</div>
+        </div>
+        <div class="image-container">
+            <img src="file:///C:/Users/ganes/.gemini/antigravity/brain/2958adc3-fe53-473d-a63b-dfbd6f5cdfe0/mobile_mockup_3d_render_1778744701405.png"
+                alt="Mockup">
+            <div class="image-caption">12. Real-World Mobile Application</div>
+            <div class="image-description">High-fidelity render of the TradeMind application in a professional mobile
+                context.</div>
+        </div>
+        <div class="footer"><span>PAGE 07</span></div>
+    </div>
+</body>
+
+</html>
