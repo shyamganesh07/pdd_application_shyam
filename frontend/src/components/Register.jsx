@@ -54,10 +54,10 @@ export default function Register({ onRegister, onSwitchToLogin }) {
       xp: 150
     }
 
-    localStorage.setItem('user_profile', JSON.stringify(profile))
-    localStorage.setItem('is_authenticated', 'true')
-    
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 4000)
+
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -65,17 +65,36 @@ export default function Register({ onRegister, onSwitchToLogin }) {
           username: nameVal,
           email: emailVal,
           password: passVal
-        })
+        }),
+        signal: controller.signal
       })
+      clearTimeout(timeoutId)
+
       if (res.ok) {
+        localStorage.setItem('user_profile', JSON.stringify(profile))
         localStorage.setItem('userEmail', emailVal)
+        localStorage.setItem('is_authenticated', 'true')
+        setLoading(false)
+        onRegister(profile)
+        return
+      } else {
+        const data = await res.json().catch(() => ({}))
+        if (data && data.detail) {
+          setError(typeof data.detail === 'string' ? data.detail : 'Registration failed')
+          setLoading(false)
+          return
+        }
       }
     } catch (err) {
-      console.warn("Backend server fetch error in Register:", err)
-    } finally {
-      setLoading(false)
-      onRegister(profile)
+      console.warn("Backend server fetch error/timeout in Register:", err)
     }
+
+    // Fast resilient fallback for mobile offline/timeout
+    localStorage.setItem('user_profile', JSON.stringify(profile))
+    localStorage.setItem('userEmail', emailVal)
+    localStorage.setItem('is_authenticated', 'true')
+    setLoading(false)
+    onRegister(profile)
   }
 
   return (

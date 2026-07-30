@@ -170,8 +170,8 @@ const TABS = [
   { id: 'profile', label: 'Profile', Icon: UserIcon },
 ]
 
-const PRIMARY_MOBILE_IDS = ['dashboard', 'intelligence', 'academy', 'profile']
-const PRIMARY_MOBILE_TABS = TABS.filter(t => PRIMARY_MOBILE_IDS.includes(t.id))
+const PRIMARY_MOBILE_IDS = ['dashboard', 'intelligence', 'simulation', 'profile']
+const PRIMARY_MOBILE_TABS = PRIMARY_MOBILE_IDS.map(id => TABS.find(t => t.id === id)).filter(Boolean)
 const SECONDARY_MOBILE_TABS = TABS.filter(t => !PRIMARY_MOBILE_IDS.includes(t.id))
 
 export default function App() {

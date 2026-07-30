@@ -31,16 +31,21 @@ export default function Login({ onLogin, onGoogleLoginSuccess, onSwitchToRegiste
     setLoading(true)
 
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 4000)
+
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: emailVal,
           password: passVal
-        })
+        }),
+        signal: controller.signal
       })
+      clearTimeout(timeoutId)
 
-      const data = await res.json()
+      const data = await res.json().catch(() => ({}))
       if (res.ok && data.user) {
         localStorage.setItem('user_profile', JSON.stringify(data.user))
         localStorage.setItem('userEmail', data.user.email)
@@ -55,7 +60,7 @@ export default function Login({ onLogin, onGoogleLoginSuccess, onSwitchToRegiste
         return
       }
     } catch (err) {
-      console.warn("Backend server fetch error in Login:", err)
+      console.warn("Backend server fetch error/timeout in Login:", err)
     }
     
     // Fallback to local profile session if backend offline

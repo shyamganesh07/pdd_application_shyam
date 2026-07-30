@@ -198,7 +198,7 @@ function generateFallbackLessons(trackId) {
       yid = "JVtUcM1sWQw";
     }
     return {
-      id: `${trackId}-lesson-${i+1}`,
+      id: `${trackId}-lesson-${i + 1}`,
       title,
       content,
       full_concept,
@@ -346,26 +346,26 @@ const FALLBACK_PATTERNS = [
 ];
 
 const FALLBACK_SUGGESTED_PATH = {
-  suggested: {"id": "beginner", "name": "Beginner Investor", "desc": "Market mechanics, orders execution, and basic structures."},
+  suggested: { "id": "beginner", "name": "Beginner Investor", "desc": "Market mechanics, orders execution, and basic structures." },
   all_paths: [
-    {"id": "beginner", "name": "Beginner Investor", "desc": "Market mechanics, orders execution, and basic structures."},
-    {"id": "swing", "name": "Swing Trader", "desc": "Multi-day trends, fibonacci, and risk-managed overrides."},
-    {"id": "intraday", "name": "Intraday Trader", "desc": "High-frequency precision and session-based volatility."},
-    {"id": "risk", "name": "Risk Manager", "desc": "Advanced position sizing and portfolio preservation."},
-    {"id": "psychology", "name": "Psychology Master", "desc": "Conquering cognitive biases and neural discipline."},
-    {"id": "quant", "name": "Quant Basics", "desc": "Mathematical modeling and algorithmic foundations."},
-    {"id": "liquidity", "name": "Liquidity & Order Flow", "desc": "Institutional depth and stop-hunting mechanics.", "tier": "elite"},
-    {"id": "smart_money", "name": "Smart Money Concepts", "desc": "Tracking whale accumulation and distribution phases.", "tier": "elite"},
-    {"id": "options_flow", "name": "Options Flow & Gamma", "desc": "Derivatives market impact on spot price action.", "tier": "elite"},
-    {"id": "volatility_modeling", "name": "Volatility Modeling", "desc": "Gaussian distributions and regime shift detection.", "tier": "elite"}
+    { "id": "beginner", "name": "Beginner Investor", "desc": "Market mechanics, orders execution, and basic structures." },
+    { "id": "swing", "name": "Swing Trader", "desc": "Multi-day trends, fibonacci, and risk-managed overrides." },
+    { "id": "intraday", "name": "Intraday Trader", "desc": "High-frequency precision and session-based volatility." },
+    { "id": "risk", "name": "Risk Manager", "desc": "Advanced position sizing and portfolio preservation." },
+    { "id": "psychology", "name": "Psychology Master", "desc": "Conquering cognitive biases and neural discipline." },
+    { "id": "quant", "name": "Quant Basics", "desc": "Mathematical modeling and algorithmic foundations." },
+    { "id": "liquidity", "name": "Liquidity & Order Flow", "desc": "Institutional depth and stop-hunting mechanics.", "tier": "elite" },
+    { "id": "smart_money", "name": "Smart Money Concepts", "desc": "Tracking whale accumulation and distribution phases.", "tier": "elite" },
+    { "id": "options_flow", "name": "Options Flow & Gamma", "desc": "Derivatives market impact on spot price action.", "tier": "elite" },
+    { "id": "volatility_modeling", "name": "Volatility Modeling", "desc": "Gaussian distributions and regime shift detection.", "tier": "elite" }
   ]
 };
 
 const FALLBACK_PERSONALIZED = {
   weaknesses: [
-    {"topic": "Risk Management", "issue": "Position Sizing", "lesson": "Never risk more than 1-2% of your total account balance on a single trade.", "severity": "High"},
-    {"topic": "Technical Analysis", "issue": "Breakout Confirmation", "lesson": "Always wait for the candle to close on your timeframe to verify breakouts and avoid fakeouts.", "severity": "Medium"},
-    {"topic": "Psychology", "issue": "Confirmation Bias", "lesson": "Do not look only at indicators that support your trade; actively look for reasons why you might be wrong.", "severity": "Medium"}
+    { "topic": "Risk Management", "issue": "Position Sizing", "lesson": "Never risk more than 1-2% of your total account balance on a single trade.", "severity": "High" },
+    { "topic": "Technical Analysis", "issue": "Breakout Confirmation", "lesson": "Always wait for the candle to close on your timeframe to verify breakouts and avoid fakeouts.", "severity": "Medium" },
+    { "topic": "Psychology", "issue": "Confirmation Bias", "lesson": "Do not look only at indicators that support your trade; actively look for reasons why you might be wrong.", "severity": "Medium" }
   ]
 };
 
@@ -383,9 +383,11 @@ const FALLBACK_PSYCHOLOGY = {
   },
   heatmap: [
     { day: "Mon", date: "2026-05-25", score: 82, scans: ["AAPL"], sims: [] },
-    { day: "Tue", date: "2026-05-26", score: 90, scans: ["TSLA"], sims: [
-      { name: "Live Session", symbol: "TSLA", net_return: 150.0, trade_count: 3, scores: { discipline: 95, execution: 90, stability: 85 } }
-    ]},
+    {
+      day: "Tue", date: "2026-05-26", score: 90, scans: ["TSLA"], sims: [
+        { name: "Live Session", symbol: "TSLA", net_return: 150.0, trade_count: 3, scores: { discipline: 95, execution: 90, stability: 85 } }
+      ]
+    },
     { day: "Wed", date: "2026-05-27", score: 0, scans: [], sims: [] },
     { day: "Thu", date: "2026-05-28", score: 0, scans: [], sims: [] },
     { day: "Fri", date: "2026-05-29", score: 0, scans: [], sims: [] },
@@ -414,19 +416,19 @@ function createFakeResponse(data) {
 function generateFallbackLiveData(symbol) {
   const cleanSymbol = (symbol || 'MOCK').toUpperCase();
   const currency = (cleanSymbol.endsWith('.NS') || cleanSymbol.endsWith('.BO') || ['^NSEI', '^NSEBANK'].includes(cleanSymbol)) ? '₹' : '$';
-  
+
   const startPrices = {
     "AAPL": 175.0, "MSFT": 420.0, "NVDA": 900.0, "TSLA": 180.0,
     "GOOGL": 170.0, "AMZN": 180.0, "META": 470.0, "NFLX": 600.0,
     "TCS.NS": 3800.0, "RELIANCE.NS": 2900.0, "INFY.NS": 1600.0,
     "HDFCBANK.NS": 1500.0, "ICICIBANK.NS": 1100.0, "^NSEI": 22000.0
   };
-  
+
   const startPrice = startPrices[cleanSymbol] || 100.0;
   const data = [];
   let currentPrice = startPrice;
   const now = new Date();
-  
+
   for (let i = 0; i < 78; i++) {
     const time = new Date(now.getTime() - (78 - i) * 5 * 60 * 1000);
     // Deterministic random walk using sin to keep it stable per day/symbol
@@ -439,7 +441,7 @@ function generateFallbackLiveData(symbol) {
       price: parseFloat(currentPrice.toFixed(2))
     });
   }
-  
+
   return {
     symbol: cleanSymbol,
     currency,
@@ -450,7 +452,7 @@ function generateFallbackLiveData(symbol) {
 function generateFallbackAnalysis(symbol) {
   const cleanSymbol = (symbol || 'AAPL').toUpperCase();
   const currency = (cleanSymbol.endsWith('.NS') || cleanSymbol.endsWith('.BO') || ['^NSEI', '^NSEBANK'].includes(cleanSymbol)) ? '₹' : '$';
-  
+
   const prices = {
     'AAPL': { entry: 175.40, sl: 171.20, t1: 178.50, t2: 182.00, t3: 185.00 },
     'TSLA': { entry: 178.20, sl: 172.50, t1: 182.40, t2: 188.00, t3: 194.00 },
@@ -469,7 +471,7 @@ function generateFallbackAnalysis(symbol) {
     '^NSEI': { entry: 22000.00, sl: 21560.00, t1: 22200.00, t2: 22450.00, t3: 22700.00 },
     '^NSEBANK': { entry: 48000.00, sl: 47040.00, t1: 48500.00, t2: 49000.00, t3: 49500.00 }
   };
-  
+
   const levels = prices[cleanSymbol] || {
     entry: 100.00,
     sl: 96.00,
@@ -477,7 +479,7 @@ function generateFallbackAnalysis(symbol) {
     t2: 106.00,
     t3: 110.00
   };
-  
+
   return {
     symbol: cleanSymbol,
     entry: levels.entry,
@@ -489,7 +491,7 @@ function generateFallbackAnalysis(symbol) {
     sentiment: "Bullish",
     vix_adjusted: false,
     market_regime: "Expansion phase",
-    price_data: Array.from({length: 30}).map((_, i) => ({ close: levels.entry - (30 - i) * 0.5 + Math.random() })),
+    price_data: Array.from({ length: 30 }).map((_, i) => ({ close: levels.entry - (30 - i) * 0.5 + Math.random() })),
     atr: 3.5,
     confidence: 4,
     change_pct: 1.45,
@@ -503,7 +505,7 @@ function generateFallbackAnalysis(symbol) {
     ui_effects: {
       aura_color: "var(--neon-green)",
       glow_intensity: "high",
-      waveform_data: Array.from({length: 20}).map(() => Math.floor(Math.random() * 60) + 20),
+      waveform_data: Array.from({ length: 20 }).map(() => Math.floor(Math.random() * 60) + 20),
       probability_glow: "0 0 20px var(--neon-green)88"
     }
   };
@@ -577,7 +579,7 @@ function getLocalFallbackResponse(urlStr) {
     try {
       const match = urlStr.match(/[?&]symbol=([^&]+)/);
       if (match) symbol = decodeURIComponent(match[1]);
-    } catch (e) {}
+    } catch (e) { }
     return createFakeResponse(generateFallbackLiveData(symbol));
   }
   if (urlStr.includes('/simulation/exchange-rate') || urlStr.includes('/rates')) {
@@ -763,20 +765,20 @@ window.fetch = async (input, init) => {
       } else if (url.startsWith('http://127.0.0.1:8000')) {
         path = url.slice(21); // Remove "http://127.0.0.1:8000"
       }
-      
+
       let savedIp = localStorage.getItem('backend_ip');
       if (!savedIp) {
         savedIp = 'https://trademind-backend-vldj.onrender.com';
       }
       const savedPort = localStorage.getItem('backend_port') || '8000';
-      
+
       const baseUrl = (savedIp.startsWith('http://') || savedIp.startsWith('https://'))
         ? savedIp
         : `http://${savedIp}:${savedPort}`;
-      
+
       const newUrl = `${baseUrl}${path.startsWith('/') ? path : '/' + path}`;
       console.log(`[ANDROID NETWORK REWRITE] ${url} -> ${newUrl} (isCapacitor=${isCapacitor})`);
-      
+
       input = newUrl;
     }
   }
@@ -788,7 +790,7 @@ window.fetch = async (input, init) => {
 
   try {
     const response = await fetchPromise;
-    
+
     // If response is not OK (500, 404, 502, timeout), try to provide local fallback response
     if (!response.ok) {
       const isAnalyzeApi = originalUrl && (originalUrl.includes('/api/analyze') || originalUrl.includes('/analyze'));
@@ -799,7 +801,7 @@ window.fetch = async (input, init) => {
             const bodyObj = JSON.parse(requestInit.body);
             if (bodyObj && bodyObj.symbol) symbol = bodyObj.symbol;
           }
-        } catch (e) {}
+        } catch (e) { }
         console.warn('[Fetch Interceptor] Analyze request returned status ' + response.status + '. Serving local fallback.');
         return createFakeResponse(generateFallbackAnalysis(symbol));
       }
@@ -812,29 +814,29 @@ window.fetch = async (input, init) => {
     }
 
     // Cache successful GET API responses in localStorage (excluding user-specific session data)
-    const isCacheable = isGet && response.ok && isApiRoute && 
-                        !originalUrl.includes('/anomaly-stream') && 
-                        !originalUrl.includes('/scan') && 
-                        !originalUrl.includes('/account-stats') && 
-                        !originalUrl.includes('/history') && 
-                        !originalUrl.includes('/profile') && 
-                        !originalUrl.includes('/evolution') && 
-                        !originalUrl.includes('/psychology') && 
-                        !originalUrl.includes('/trader-dna') && 
-                        !originalUrl.includes('/simulation/live-data') &&
-                        !originalUrl.includes('/api/rates');
+    const isCacheable = isGet && response.ok && isApiRoute &&
+      !originalUrl.includes('/anomaly-stream') &&
+      !originalUrl.includes('/scan') &&
+      !originalUrl.includes('/account-stats') &&
+      !originalUrl.includes('/history') &&
+      !originalUrl.includes('/profile') &&
+      !originalUrl.includes('/evolution') &&
+      !originalUrl.includes('/psychology') &&
+      !originalUrl.includes('/trader-dna') &&
+      !originalUrl.includes('/simulation/live-data') &&
+      !originalUrl.includes('/api/rates');
     if (isCacheable) {
       const cloneForCache = response.clone();
       cloneForCache.text().then(text => {
         window.safeSetLocalStorage('api_cache_' + originalUrl, text);
         window.safeSetLocalStorage('api_cache_' + urlStr, text);
-      }).catch(() => {});
+      }).catch(() => { });
     }
 
     return response;
   } catch (error) {
     console.warn(`[Fetch Interceptor Network Warning] ${urlStr}:`, error);
-    
+
     const isAnalyzeApi = originalUrl && (originalUrl.includes('/api/analyze') || originalUrl.includes('/analyze'));
     const isOtpSend = originalUrl && originalUrl.includes('/send_otp');
     const isOtpVerify = originalUrl && originalUrl.includes('/verify_otp');
@@ -858,7 +860,7 @@ window.fetch = async (input, init) => {
           const bodyObj = JSON.parse(requestInit.body);
           if (bodyObj && bodyObj.symbol) symbol = bodyObj.symbol;
         }
-      } catch (e) {}
+      } catch (e) { }
       console.log('[Fetch Interceptor] Serving local analysis fallback for ' + symbol);
       return createFakeResponse(generateFallbackAnalysis(symbol));
     }
