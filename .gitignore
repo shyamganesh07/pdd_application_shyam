@@ -18,3 +18,8 @@ frontend/.env
 .idea/
 .vscode/
 *.log
+TradeMind_Comprehensive_Test_Results.csv
+TradeMind_Comprehensive_Test_Results.xlsx
+TradeMind_Test_Results_500.zip
+TradeMind_Test_Summary.txt
+.github/
