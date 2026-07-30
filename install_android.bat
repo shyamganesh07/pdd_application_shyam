@@ -3,7 +3,7 @@ echo === TradeMind AI - Android Installer (ADB) ===
 echo.
 
 set ADB_PATH=C:\Users\ganes\AppData\Local\Android\Sdk\platform-tools\adb.exe
-set APK_PATH=c:\Users\ganes\Videos\pdd_pwa\frontend\android\app\build\outputs\apk\debug\app-debug.apk
+set APK_PATH=%~dp0frontend\android\app\build\outputs\apk\debug\app-debug.apk
 
 if not exist "%APK_PATH%" (
     echo [ERROR] Compiled APK not found!

@@ -174,153 +174,9 @@ function getLessonChartDetails(title) {
   return { chart_type, chart_data, chart_desc };
 }
 
-// ── Curated YouTube Video IDs per track (verified, real trading education videos) ──
-const TRACK_YOUTUBE_MAP = {
-  beginner: [
-    "s5t6V34L05c", // Market Structure - CA Rachana Ranade Basics Lecture 1
-    "J5-4V01R4tY", // Orders & Execution - Humphrey Yang Investing Guide
-    "V1dYgWjG698", // Support & Resistance - GTF Complete Course
-    "x2M4D3x7N8M", // Trend Identification - ClearValue Tax Free Course
-    "p7HKvqRI_Bo", // Technical Indicators - Rayner Teo
-    "lbLZjYnrEFo", // Volume Analysis - Trading with Rayner
-    "C3KRwfj4F2M", // Candlestick Patterns - The Trading Channel
-    "F3QpgXBtDeo", // Risk Management 1% Rule - Warrior Trading
-    "OhQ3bDRKkd4", // Trading Plan - SMB Capital
-    "wH2MbK8HPQQ", // Market Sessions - Rayner Teo
-    "EJRqFBse2fU", // Psychology First Loss - TraderLion
-    "SEhMp3LLCoU"  // Preparing for Live Trading - Ziptrader
-  ],
-  swing: [
-    "OoSBCih7UPE", // Multi-day Trend Following - Mark Minervini
-    "fGxSGnOC5mE", // Moving Average Crossovers - Rayner Teo
-    "1d5jGwNKK4w", // Swing High/Low - The Moving Average
-    "tB_2_a-QQME", // Fibonacci Entries - Trading With Rayner
-    "cTnYKJxXECA", // Daily vs Weekly Charts - Wysetrade
-    "K97xlHexiHQ", // Trailing Stop-Loss - Adam Khoo
-    "cBWeBK6HPEY", // Position Sizing - Van Tharp
-    "8MZ5dKl0gxA", // Breakouts vs Retests - SMB Capital
-    "QgahQb1KSRU", // Risk Management Overnight - Investors Underground
-    "JlEGHBoRQko", // Correlations & Indexes - Rayner Teo
-    "WOaFRE5QoLg", // Fundamental Catalysts - IBD
-    "Y6COnFw3pkM"  // Weekly Watchlist - Ziptrader
-  ],
-  intraday: [
-    "NzBocKVKyEI", // ORB Opening Range Breakout - Humbled Trader
-    "lDwnxJ0eWzg", // VWAP Trading - Warrior Trading
-    "yfXwOIPmfEU", // Intraday Liquidity Zones - ICT
-    "mH5kQJWnXiE", // Order Book Imbalance - Axia Futures
-    "jn1P4Knbk38", // Session H/L Reversals - Humbled Trader
-    "cUDFTSL890w", // Scalping Tick Charts - Warrior Trading
-    "QqJLkZkBULU", // MACD & RSI Momentum - Rayner Teo
-    "8hly13BEOIU", // News Gaps Trading - Ziptrader
-    "0_AQlJC1W50", // Time of Day Volatility - SMB Capital
-    "YKtJiQG41mQ", // Intraday Leverage Risks - Warrior Trading
-    "FNy5zuQpAuo", // Drawdown Limits - Investors Underground
-    "UEqMXQD-_QA"  // Post-Market Journaling - TraderLion
-  ],
-  risk: [
-    "bM9bYOBuKF4", // Mathematics of Expectancy - Van Tharp Institute
-    "2G_7GKCbhMI", // Position Sizing & Kelly - Mark Douglas
-    "QgahQb1KSRU", // Maximum Drawdown - Investors Underground
-    "lbLZjYnrEFo", // Risk-to-Reward - Rayner Teo
-    "K97xlHexiHQ", // Hedging with Options - Adam Khoo
-    "B9k-taybTq4", // Correlation Risks - Ziptrader
-    "p7HKvqRI_Bo", // Stop-Loss ATR - Rayner Teo
-    "tB_2_a-QQME", // Dynamic De-leveraging - Trading With Rayner
-    "0_AQlJC1W50", // VaR Modeling - SMB Capital
-    "OhQ3bDRKkd4", // Equity Curve Analysis - SMB Capital
-    "EJRqFBse2fU", // Consecutive Losses - TraderLion
-    "F3QpgXBtDeo"  // Fail-Safe System - Warrior Trading
-  ],
-  psychology: [
-    "PB_Dkt22Jxo", // FOMO & Impulse - Mark Douglas
-    "EJRqFBse2fU", // Revenge Trading Recovery - TraderLion
-    "mH5kQJWnXiE", // Loss Aversion - Axia Futures
-    "2G_7GKCbhMI", // Overconfidence - Mark Douglas
-    "FNy5zuQpAuo", // Neural Discipline - Investors Underground
-    "UEqMXQD-_QA", // Trader's Journal - TraderLion
-    "OhQ3bDRKkd4", // Pre-Market Routines - SMB Capital
-    "0_AQlJC1W50", // Managing Stress - SMB Capital
-    "bM9bYOBuKF4", // Probabilistic Outcomes - Van Tharp
-    "K97xlHexiHQ", // Cognitive Biases - Adam Khoo
-    "YKtJiQG41mQ", // Overtrading - Warrior Trading
-    "SEhMp3LLCoU"  // Peak Trader Flow - Ziptrader
-  ],
-  quant: [
-    "4jaBwalskbM", // Quant Finance Foundations - QuantConnect
-    "mH5kQJWnXiE", // Backtesting Pitfalls - Axia Futures
-    "fGxSGnOC5mE", // Mean Reversion vs Trend - Rayner Teo
-    "QqJLkZkBULU", // Statistical Arbitrage - Rayner Teo
-    "cUDFTSL890w", // Stop Loss in Code - Warrior Trading
-    "OoSBCih7UPE", // Parameter Optimization - Mark Minervini
-    "B9k-taybTq4", // Python Data Extraction - Ziptrader
-    "lDwnxJ0eWzg", // Time-Series Analysis - Warrior Trading
-    "NzBocKVKyEI", // ML in Trading - Humbled Trader
-    "tB_2_a-QQME", // Portfolio Rebalancing - Trading With Rayner
-    "bM9bYOBuKF4", // Monte Carlo Sim - Van Tharp
-    "8MZ5dKl0gxA"  // API & Live Execution - SMB Capital
-  ],
-  liquidity: [
-    "mH5kQJWnXiE", // Order Book Depth L3 - Axia Futures
-    "jn1P4Knbk38", // Market Makers Bid-Ask - Humbled Trader
-    "yfXwOIPmfEU", // Liquidity Sweep Zones - ICT
-    "lDwnxJ0eWzg", // Iceberg Orders - Warrior Trading
-    "NzBocKVKyEI", // Stop-Loss Hunting - Humbled Trader
-    "0_AQlJC1W50", // Delta Divergence - SMB Capital
-    "cUDFTSL890w", // Footprint Charts - Warrior Trading
-    "p7HKvqRI_Bo", // Volume Spread Analysis - Rayner Teo
-    "FNy5zuQpAuo", // Liquidity Vacuums - Investors Underground
-    "8hly13BEOIU", // HFT Footprints - Ziptrader
-    "OoSBCih7UPE", // Institutional Accumulation - Mark Minervini
-    "8MZ5dKl0gxA"  // Cross-Market Arbitrage - SMB Capital
-  ],
-  smart_money: [
-    "yfXwOIPmfEU", // Wyckoff Accumulation - ICT
-    "jn1P4Knbk38", // Order Blocks & FVG - Humbled Trader
-    "OoSBCih7UPE", // Market Structure Shifts - Mark Minervini
-    "tB_2_a-QQME", // Premium vs Discount - Trading With Rayner
-    "mH5kQJWnXiE", // Mitigation Blocks - Axia Futures
-    "NzBocKVKyEI", // Inducement & Liquidity Grabs - Humbled Trader
-    "cTnYKJxXECA", // HTF vs LTF Alignment - Wysetrade
-    "lDwnxJ0eWzg", // Institutional Levels - Warrior Trading
-    "0_AQlJC1W50", // Dealing Ranges - SMB Capital
-    "B9k-taybTq4", // Whale Tracking - Ziptrader
-    "fGxSGnOC5mE", // Smart Money Divergence - Rayner Teo
-    "8MZ5dKl0gxA"  // Precision Triggers - SMB Capital
-  ],
-  options_flow: [
-    "4jaBwalskbM", // Option Greeks - QuantConnect
-    "K97xlHexiHQ", // Dealers Hedging - Adam Khoo
-    "B9k-taybTq4", // Option Flow Tracking - Ziptrader
-    "QqJLkZkBULU", // Open Interest & Volume - Rayner Teo
-    "bM9bYOBuKF4", // Vanna & Charm Flows - Van Tharp
-    "cBWeBK6HPEY", // IV Crush - Van Tharp
-    "0_AQlJC1W50", // Market Maker Charts - SMB Capital
-    "8hly13BEOIU", // GEX Calculation - Ziptrader
-    "FNy5zuQpAuo", // Dark Pool Activity - Investors Underground
-    "YKtJiQG41mQ", // Unusual Whales - Warrior Trading
-    "mH5kQJWnXiE", // Hedging with GEX - Axia Futures
-    "OoSBCih7UPE"  // Volatility Arbitrage - Mark Minervini
-  ],
-  volatility_modeling: [
-    "4jaBwalskbM", // Historical vs Implied Vol - QuantConnect
-    "bM9bYOBuKF4", // Fat-Tail Distributions - Van Tharp
-    "2G_7GKCbhMI", // Regime Shift Detection - Mark Douglas
-    "cBWeBK6HPEY", // GARCH Forecasting - Van Tharp
-    "K97xlHexiHQ", // VIX Mechanics - Adam Khoo
-    "QqJLkZkBULU", // Volatility Skew - Rayner Teo
-    "mH5kQJWnXiE", // Markov Chain Regimes - Axia Futures
-    "p7HKvqRI_Bo", // Dynamic Position Adjusting - Rayner Teo
-    "0_AQlJC1W50", // Black Swan Events - SMB Capital
-    "OoSBCih7UPE", // Correlation Breakdowns - Mark Minervini
-    "8hly13BEOIU", // Volatility Breakouts - Ziptrader
-    "F3QpgXBtDeo"  // Tail Risk Hedging - Warrior Trading
-  ]
-};
-
 function generateFallbackLessons(trackId) {
   const topics = FALLBACK_TOPICS[trackId] || FALLBACK_TOPICS.beginner;
-  const youtubeIds = TRACK_YOUTUBE_MAP[trackId] || TRACK_YOUTUBE_MAP.beginner;
+  const youtubeIds = ["T6H8v_Y-L-g", "Zf37t7njppg", "8-P3iFz7_8E", "3PrN9pREB_w"];
   const videoUrls = [
     "https://assets.mixkit.co/videos/preview/mixkit-financial-graphs-on-a-computer-monitor-close-up-19013-large.mp4",
     "https://assets.mixkit.co/videos/preview/mixkit-business-charts-and-graphs-close-up-31514-large.mp4"
@@ -329,8 +185,18 @@ function generateFallbackLessons(trackId) {
   return topics.map((title, i) => {
     const { content, full_concept } = getTopicDetails(title);
     const { chart_type, chart_data, chart_desc } = getLessonChartDetails(title);
-    const yid = youtubeIds[i] || youtubeIds[i % youtubeIds.length] || "s5t6V34L05c";
-
+    let yid = youtubeIds[i % youtubeIds.length];
+    if (trackId === 'swing' && i === 0) {
+      yid = "n3Qdj4lOlbI";
+    } else if (trackId === 'intraday' && i === 0) {
+      yid = "D8JLldeSLO0";
+    } else if (trackId === 'risk' && i === 0) {
+      yid = "BAfRVpKIxZ4";
+    } else if (trackId === 'psychology' && i === 0) {
+      yid = "GxBwWWupvrk";
+    } else if (trackId === 'quant' && i === 0) {
+      yid = "JVtUcM1sWQw";
+    }
     return {
       id: `${trackId}-lesson-${i + 1}`,
       title,
