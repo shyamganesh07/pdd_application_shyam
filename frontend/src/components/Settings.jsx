@@ -81,37 +81,75 @@ export default function Settings() {
         {/* Unit System */}
         <div className="settings-row">
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <div className="settings-icon"><Globe size={14} color="#94A3B8" /></div>
+            <div className="settings-icon"><Globe size={18} color="#94A3B8" /></div>
             <div>
               <div style={{ fontFamily: 'Space Grotesk', fontWeight: 600, fontSize: '0.88rem' }}>Unit System</div>
+              <div style={{ fontSize: '0.68rem', color: '#94A3B8', marginTop: 2 }}>Toggles metric/imperial displays and USD/INR currency formatting</div>
             </div>
           </div>
-          <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>Metric (Default)</span>
+          <span style={{ fontSize: '0.78rem', color: 'var(--neon-blue)', fontWeight: 700, padding: '2px 8px', background: 'rgba(0,229,255,0.1)', borderRadius: 6 }}>Metric (Default)</span>
         </div>
         {/* Theme */}
         <div className="settings-row">
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <div className="settings-icon"><Moon size={14} color="#94A3B8" /></div>
+            <div className="settings-icon"><Moon size={18} color="#94A3B8" /></div>
             <div>
               <div style={{ fontFamily: 'Space Grotesk', fontWeight: 600, fontSize: '0.88rem' }}>Theme</div>
+              <div style={{ fontSize: '0.68rem', color: '#94A3B8', marginTop: 2 }}>Switch between High-Contrast Dark OLED Mode and Clean Light Mode</div>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#94A3B8', fontSize: '0.78rem' }}>
-            Dark <ChevronRight size={14} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--neon-purple)', fontSize: '0.78rem', fontWeight: 700, padding: '2px 8px', background: 'rgba(147,51,234,0.1)', borderRadius: 6 }}>
+            Dark OLED <ChevronRight size={14} />
           </div>
         </div>
         {/* Notifications */}
-        <div className="settings-row">
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <div className="settings-icon"><Bell size={14} color="#94A3B8" /></div>
-            <div>
-              <div style={{ fontFamily: 'Space Grotesk', fontWeight: 600, fontSize: '0.88rem' }}>Notifications</div>
+        <div className="settings-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 12 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div className="settings-icon"><Bell size={18} color="#94A3B8" /></div>
+              <div>
+                <div style={{ fontFamily: 'Space Grotesk', fontWeight: 600, fontSize: '0.88rem' }}>Notifications</div>
+                <div style={{ fontSize: '0.68rem', color: '#94A3B8', marginTop: 2 }}>Real-time Web Push alerts for high-conviction (&gt;90%) signals and price anomalies</div>
+              </div>
             </div>
+            <label className="toggle-switch">
+              <input type="checkbox" checked={notifs} onChange={e => setNotifs(e.target.checked)} />
+              <span className="toggle-track" />
+            </label>
           </div>
-          <label className="toggle-switch">
-            <input type="checkbox" checked={notifs} onChange={e => setNotifs(e.target.checked)} />
-            <span className="toggle-track" />
-          </label>
+          
+          {notifs && (
+            <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 8, borderTop: '1px dashed var(--border)' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 600 }}>Verify Web Push Alert Delivery:</span>
+              <button 
+                onClick={() => {
+                  if (typeof window !== 'undefined' && 'Notification' in window) {
+                    if (Notification.permission === 'granted') {
+                      new Notification("🔔 TradeMind — Live Signal Alert", {
+                        body: "AAPL: Strong Buy Signal Confirmed! Target $338.22 (94.2% Confluence Probability)",
+                        icon: "/favicon.ico"
+                      })
+                    } else if (Notification.permission !== 'denied') {
+                      Notification.requestPermission()
+                    }
+                  }
+                  alert("🔔 Live Test Notification Dispatched!")
+                }}
+                style={{
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  padding: '4px 12px',
+                  borderRadius: '6px',
+                  background: 'rgba(0,229,255,0.15)',
+                  color: 'var(--neon-blue)',
+                  border: '1px solid rgba(0,229,255,0.3)',
+                  cursor: 'pointer'
+                }}
+              >
+                Send Test Notification
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -121,14 +159,23 @@ export default function Settings() {
         <div className="settings-row" style={{ paddingBottom: 10, borderBottom: 'none' }}>
           <div>
             <div style={{ fontFamily: 'Space Grotesk', fontWeight: 600, fontSize: '0.88rem', color: '#F1F5F9' }}>Active Profile</div>
-            <div style={{ fontSize: '0.68rem', color: '#94A3B8', marginTop: 1 }}>Adapts UI and AI recommendations</div>
+            <div style={{ fontSize: '0.68rem', color: '#94A3B8', marginTop: 1 }}>Adapts risk allocations, stop-loss tightness, and AI recommendation profiles</div>
           </div>
         </div>
-        <div style={{ padding: '0 24px 20px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {['Beginner Investor', 'Swing Trader', 'Intraday Trader', 'Conservative', 'Aggressive'].map(mode => (
-            <label key={mode} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', padding: '8px 12px', background: 'var(--card2)', borderRadius: 8, border: '1px solid transparent' }} className="hover:border-blue transition-colors">
-              <input type="radio" name="traderMode" defaultChecked={mode === 'Beginner Investor'} style={{ accentColor: 'var(--blue)' }} />
-              <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{mode}</span>
+        <div style={{ padding: '0 24px 20px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {[
+            { mode: 'Beginner Investor', desc: 'Guided low-risk setups with conservative 1:3 R:R buffers and step-by-step risk management tips.' },
+            { mode: 'Swing Trader',      desc: 'Multi-day breakout trades confirmed by daily chart trendlines and volume acceleration.' },
+            { mode: 'Intraday Trader',   desc: 'Fast 5m/15m chart alerts with tight ATR stop-losses for same-day scalp executions.' },
+            { mode: 'Conservative',      desc: 'Maximum capital preservation profile enforcing tight drawdown bounds and low risk allocation.' },
+            { mode: 'Aggressive',        desc: 'High volatility momentum profile prioritizing maximum gain targets and fast breakouts.' }
+          ].map(({ mode, desc }) => (
+            <label key={mode} style={{ display: 'flex', flexDirection: 'column', gap: 4, cursor: 'pointer', padding: '10px 14px', background: 'var(--card2)', borderRadius: 8, border: '1px solid var(--border)' }} className="hover:border-blue transition-colors">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <input type="radio" name="traderMode" defaultChecked={mode === 'Beginner Investor'} style={{ accentColor: 'var(--neon-blue)' }} />
+                <span style={{ fontSize: '0.88rem', fontWeight: 700 }}>{mode}</span>
+              </div>
+              <span style={{ fontSize: '0.7rem', color: '#94A3B8', paddingLeft: 24, lineHeight: 1.35 }}>{desc}</span>
             </label>
           ))}
         </div>
@@ -227,7 +274,7 @@ export default function Settings() {
 
       {/* Version */}
       <div style={{ textAlign: 'center', padding: '16px', color: '#4B5563', fontSize: '0.7rem' }}>
-        TradeMind AI v3.0 • Institutional OS
+        TradeMind v3.0 • Institutional OS
       </div>
     </>
   )

@@ -1,12 +1,16 @@
 import React, { useState } from 'react'
-import { User, Mail, Lock, Zap, ShieldCheck, ArrowRight, Brain } from 'lucide-react'
+import { User, Mail, Lock, Zap, ShieldCheck, ArrowRight, Brain, Eye, EyeOff } from 'lucide-react'
+import { clearUserSessionData } from '../services/authService'
 
 export default function Register({ onRegister, onSwitchToLogin }) {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   })
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -15,72 +19,62 @@ export default function Register({ onRegister, onSwitchToLogin }) {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    if (e && e.preventDefault) e.preventDefault()
     setError('')
+
+    const nameVal = formData.username ? formData.username.trim() : ''
+    const emailVal = formData.email ? formData.email.trim() : ''
+    const passVal = formData.password ? formData.password.trim() : ''
+    const confirmVal = formData.confirmPassword ? formData.confirmPassword.trim() : ''
     
-    if (!formData.username || !formData.email || !formData.password) {
+    if (!nameVal || !emailVal || !passVal || !confirmVal) {
       setError('All fields are required')
       return
     }
 
-    if (formData.password.length < 6) {
+    if (passVal.length < 6) {
       setError('Password must be at least 6 characters')
       return
     }
 
+    if (passVal !== confirmVal) {
+      setError('Passwords do not match')
+      return
+    }
+
     setLoading(true)
+    clearUserSessionData()
+
+    const profile = {
+      email: emailVal.toLowerCase(),
+      username: nameVal,
+      name: nameVal,
+      password: passVal,
+      balance: 10000.0,
+      xp: 150
+    }
+
+    localStorage.setItem('user_profile', JSON.stringify(profile))
+    localStorage.setItem('is_authenticated', 'true')
     
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: formData.username,
-          email: formData.email,
-          password: formData.password
+          username: nameVal,
+          email: emailVal,
+          password: passVal
         })
       })
-
-      const data = await res.json()
-
       if (res.ok) {
-        setLoading(false)
-        // Store user profile preview details locally
-        localStorage.setItem('user_profile', JSON.stringify({
-          email: formData.email,
-          username: formData.username,
-          name: formData.username,
-          password: formData.password
-        }))
-        onRegister({ email: formData.email, username: formData.username })
-      } else {
-        if (res.status === 404) {
-          console.warn("Auth endpoint not found on the backend. Falling back to offline registration.")
-          localStorage.setItem('user_profile', JSON.stringify({
-            email: formData.email,
-            username: formData.username,
-            name: formData.username,
-            password: formData.password
-          }))
-          setLoading(false)
-          alert("Auth endpoint not found on backend. Profile registered in offline-only mode on this device.")
-          onRegister({ email: formData.email, username: formData.username })
-          return
-        }
-        setLoading(false)
-        setError(data.detail || 'Registration failed')
+        localStorage.setItem('userEmail', emailVal)
       }
     } catch (err) {
-      console.warn("Backend server unreachable. Storing profile offline...", err)
-      localStorage.setItem('user_profile', JSON.stringify({
-        email: formData.email,
-        username: formData.username,
-        name: formData.username,
-        password: formData.password
-      }))
+      console.warn("Backend server fetch error in Register:", err)
+    } finally {
       setLoading(false)
-      alert("Server offline. Profile registered in offline-only mode on this device.")
-      onRegister({ email: formData.email, username: formData.username })
+      onRegister(profile)
     }
   }
 
@@ -88,10 +82,23 @@ export default function Register({ onRegister, onSwitchToLogin }) {
     <div className="auth-container fade-in">
       <div className="auth-header slide-up">
         <div className="auth-brand-icon neural-pulse">
-          <Brain size={32} color="var(--neon-cyan)" />
+          <Brain size={36} color="white" />
         </div>
-        <h1 className="auth-title">Initialize Neural OS</h1>
-        <p className="auth-subtitle">Create your institutional trading identity</p>
+        <h1 className="auth-title">TradeMind AI</h1>
+        <p className="auth-subtitle">
+          <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#39FF14', boxShadow: '0 0 8px #39FF14' }}></span>
+          Create Institutional Trading Account
+        </p>
+      </div>
+
+      {/* Tab bar for switching between Sign In & Register */}
+      <div className="auth-tab-bar slide-up slide-up-delay-1" style={{ maxWidth: '440px', width: '100%' }}>
+        <button type="button" className="auth-tab" onClick={onSwitchToLogin}>
+          Sign In
+        </button>
+        <button type="button" className="auth-tab active">
+          <User size={16} /> Register
+        </button>
       </div>
 
       <div className="auth-card holographic slide-up slide-up-delay-1">
@@ -103,80 +110,142 @@ export default function Register({ onRegister, onSwitchToLogin }) {
           )}
 
           <div className="input-group">
-            <User size={18} className="input-icon" />
             <input
               type="text"
               name="username"
               placeholder="Full Name / Handle"
               value={formData.username}
               onChange={handleChange}
-              autoComplete="username"
+              autoComplete="name"
               required
             />
+            <User size={18} className="input-icon" />
           </div>
 
           <div className="input-group">
-            <Mail size={18} className="input-icon" />
             <input
               type="email"
               name="email"
-              placeholder="Institutional Email"
+              placeholder="Email / Gmail Address"
               value={formData.email}
               onChange={handleChange}
               autoComplete="email"
               required
             />
+            <Mail size={18} className="input-icon" />
           </div>
 
           <div className="input-group">
-            <Lock size={18} className="input-icon" />
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               name="password"
-              placeholder="Security Access Key"
+              placeholder="Password (min 6 characters)"
               value={formData.password}
               onChange={handleChange}
               autoComplete="new-password"
               required
+              style={{ paddingRight: '48px' }}
             />
+            <Lock size={18} className="input-icon" />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: 'absolute',
+                right: '14px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-dim)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4px',
+                zIndex: 2
+              }}
+              tabIndex={-1}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+
+          <div className="input-group">
+            <input
+              type={showConfirmPassword ? 'text' : 'password'}
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              autoComplete="new-password"
+              required
+              style={{ paddingRight: '48px' }}
+            />
+            <Lock size={18} className="input-icon" />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              style={{
+                position: 'absolute',
+                right: '14px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-dim)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4px',
+                zIndex: 2
+              }}
+              tabIndex={-1}
+              aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+            >
+              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
 
           <button 
             type="submit" 
-            className="btn-generate" 
+            className="btn-auth-primary" 
             disabled={loading}
             style={{ marginTop: '8px' }}
           >
             {loading ? (
               <>
-                <Zap size={20} className="animate-spin-slow" />
-                Initializing...
+                <Zap size={18} className="animate-spin-slow" />
+                Initializing Profile...
               </>
             ) : (
               <>
-                Deploy Profile
-                <ArrowRight size={20} />
+                Create Trading Identity
+                <ArrowRight size={18} />
               </>
             )}
           </button>
         </form>
 
         <div className="auth-divider">
-          <span>SECURED BY TRADEMIND AI</span>
+          <span>SECURED BY TRADEMIND</span>
         </div>
 
-        <div className="flex items-center justify-center gap-2 text-[0.7rem] text-[var(--text-dim)] font-grotesk opacity-60">
-          <ShieldCheck size={12} />
+        <div className="flex items-center justify-center gap-2 text-[0.75rem] text-[var(--text-dim)] font-grotesk opacity-75">
+          <ShieldCheck size={14} style={{ color: '#00D2FF' }} />
           End-to-End Encrypted Neural Uplink
         </div>
       </div>
 
-      <div className="mt-8 text-center slide-up slide-up-delay-3">
+      <div className="mt-5 text-center slide-up slide-up-delay-3">
         <p className="text-[var(--text-dim)] text-sm">
-          Already have an account? 
-          <button className="btn-auth-link ml-1" onClick={onSwitchToLogin}>Sign In</button>
+          Already registered? 
+          <button className="btn-auth-link ml-1.5" onClick={onSwitchToLogin}>Sign In to Terminal</button>
         </p>
       </div>
     </div>
   )
 }
+

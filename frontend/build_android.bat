@@ -2,7 +2,7 @@
 echo === TradeMind AI - Android Build Automation Script ===
 echo.
 
-cd /d "c:\Users\ganes\Videos\pdd_pwa\frontend"
+cd /d "%~dp0"
 
 echo [1/6] Installing dependencies...
 call npm install --legacy-peer-deps
@@ -53,12 +53,27 @@ echo SDK path configured to C:\Users\ganes\AppData\Local\Android\Sdk
 echo.
 echo [6/6] Compiling Android App (APK)...
 :: Set JAVA_HOME dynamically to Android Studio's bundled JDK if available
-if exist "C:\Program Files\Android\Android Studio\jbr" (
+if exist "C:\Program Files\Android\Android Studio\jbr\bin\java.exe" (
     set "JAVA_HOME=C:\Program Files\Android\Android Studio\jbr"
-    set "PATH=C:\Program Files\Android\Android Studio\jbr\bin;%PATH%"
-    echo Using Android Studio Java JBR: C:\Program Files\Android\Android Studio\jbr
+) else if exist "C:\Program Files\Android\Android Studio\jre\bin\java.exe" (
+    set "JAVA_HOME=C:\Program Files\Android\Android Studio\jre"
+) else if exist "C:\Program Files (x86)\Android\Android Studio\jbr\bin\java.exe" (
+    set "JAVA_HOME=C:\Program Files (x86)\Android\Android Studio\jbr"
+) else if exist "%LOCALAPPDATA%\Android\Studio\jbr\bin\java.exe" (
+    set "JAVA_HOME=%LOCALAPPDATA%\Android\Studio\jbr"
+)
+
+if not defined JAVA_HOME (
+    for /d %%d in ("C:\Program Files\Java\jdk*") do (
+        if exist "%%d\bin\java.exe" set "JAVA_HOME=%%d"
+    )
+)
+
+if defined JAVA_HOME (
+    set "PATH=%JAVA_HOME%\bin;%PATH%"
+    echo Using Java JDK: %JAVA_HOME%
 ) else (
-    echo [WARNING] Bundled Android Studio JBR not found at default location.
+    echo [WARNING] No JDK found at default locations. Attempting fallback...
 )
 
 cd android
@@ -73,6 +88,6 @@ echo.
 echo ===================================================
 echo BUILD SUCCESSFUL!
 echo Android APK path: 
-echo   c:\Users\ganes\Videos\pdd_pwa\frontend\android\app\build\outputs\apk\debug\app-debug.apk
+echo   %~dp0android\app\build\outputs\apk\debug\app-debug.apk
 echo ===================================================
 pause

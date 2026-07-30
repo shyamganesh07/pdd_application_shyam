@@ -2,7 +2,7 @@
 echo === TradeMind AI - Android Build Automation Script (CI Mode) ===
 echo.
 
-cd /d "c:\Users\ganes\Videos\pdd_pwa\frontend"
+cd /d "%~dp0"
 
 echo [1/6] Installing dependencies...
 call npm install --legacy-peer-deps
@@ -36,6 +36,7 @@ echo [4/6] Syncing assets to Android...
 call npx cap sync
 if %ERRORLEVEL% neq 0 (
     echo Error syncing assets to Capacitor.
+    pause
     exit /b %ERRORLEVEL%
 )
 
@@ -67,5 +68,5 @@ echo.
 echo ===================================================
 echo BUILD SUCCESSFUL!
 echo Android APK path: 
-echo   c:\Users\ganes\Videos\pdd_pwa\frontend\android\app\build\outputs\apk\debug\app-debug.apk
+echo   %~dp0android\app\build\outputs\apk\debug\app-debug.apk
 echo ===================================================

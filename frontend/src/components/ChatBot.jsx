@@ -143,7 +143,7 @@ export default function ChatBot() {
                 <Bot size={18} color="white" />
               </div>
               <div>
-                <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: '0.95rem', color: 'white' }}>TradeMind AI</div>
+                <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: '0.95rem', color: 'white' }}>TradeMind</div>
                 <div style={{ fontSize: '0.65rem', color: '#22C55E', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
                   <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: 3, background: '#22C55E' }}></span>
                   Online

@@ -86,6 +86,26 @@ export default function CrowdPsychology({ onBack }) {
                 <div className="text-[10px] text-text-dim uppercase tracking-wider font-bold">Speculative Activity</div>
              </div>
           </div>
+
+          {/* Live Score Calculation Breakdown */}
+          {data.calculation_factors && (
+            <div style={{ marginTop: 24, paddingTop: 16, borderTop: '1px dashed var(--border)', textAlign: 'left', paddingLeft: 12, paddingRight: 12 }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--neon-blue)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Zap size={14} /> Live Multi-Factor Calculation Methodology
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 8 }}>
+                {data.calculation_factors.map((f, i) => (
+                  <div key={i} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', borderRadius: 8, padding: '8px 12px' }}>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', fontWeight: 600 }}>{f.factor} ({f.weight})</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
+                      <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'white' }}>{f.value}</span>
+                      <span style={{ fontSize: '0.65rem', padding: '1px 6px', borderRadius: 4, background: 'rgba(0,229,255,0.1)', color: 'var(--neon-blue)', fontWeight: 600 }}>{f.impact}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-8">
@@ -201,13 +221,13 @@ export default function CrowdPsychology({ onBack }) {
                  </div>
               </div>
               <div>
-                 <div className="flex justify-between text-xs mb-1">
-                    <span className="text-text-dim">Institutional Flow</span>
-                    <span className="text-neon-purple font-bold">Diverging (Selling)</span>
-                 </div>
-                 <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-neon-purple" style={{ width: '35%' }} />
-                 </div>
+                  <div className="flex justify-between text-xs mb-1">
+                     <span className="text-text-dim">Institutional Flow</span>
+                     <span className="text-neon-purple font-bold">Accumulating (94%)</span>
+                  </div>
+                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                     <div className="h-full bg-neon-purple" style={{ width: '94%' }} />
+                  </div>
               </div>
            </div>
         </div>

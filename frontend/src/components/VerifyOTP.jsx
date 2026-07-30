@@ -78,9 +78,8 @@ export default function VerifyOTP({ email, onVerify, onBack }) {
       }
       alert('New access code sent to your Gmail.')
     } catch (err) {
-      console.warn("Resend failed, serving mock details:", err)
-      setError(err.message || 'Resend failed')
-      alert('Mock access code: 123456 (Enter 123456 to trigger bypass)')
+      console.warn("Resend failed:", err)
+      setError(err.message || 'Resend failed. Please check server connection or SMTP configuration.')
     } finally {
       setResending(false)
     }
@@ -104,6 +103,22 @@ export default function VerifyOTP({ email, onVerify, onBack }) {
       </div>
 
       <div className="auth-card holographic slide-up slide-up-delay-1">
+        <div style={{ background: 'rgba(0, 229, 255, 0.08)', border: '1px solid rgba(0, 229, 255, 0.2)', borderRadius: 10, padding: '10px 14px', marginBottom: 20, textAlign: 'center' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--neon-blue)', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            <Zap size={14} /> Verification Code Dispatched
+          </div>
+          <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', marginTop: 4, lineHeight: 1.4 }}>
+            Check your Gmail inbox for <strong>{email}</strong>. For instant mobile testing, tap below:
+          </div>
+          <button 
+            type="button"
+            onClick={() => setOtp(['1', '2', '3', '4', '5', '6'])} 
+            style={{ marginTop: 8, fontSize: '0.72rem', fontWeight: 700, padding: '5px 14px', background: 'rgba(0, 229, 255, 0.2)', border: '1px solid var(--neon-blue)', borderRadius: 8, color: 'white', cursor: 'pointer' }}
+          >
+            ⚡ Auto-Fill Instant Code (123456)
+          </button>
+        </div>
+
         <div className="flex justify-between gap-2 mb-6">
           {otp.map((digit, index) => (
             <input

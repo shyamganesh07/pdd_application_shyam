@@ -50,7 +50,7 @@ function getOutcome(item) {
 
 const FILTERS = ['All', 'Stocks', 'Commodities', 'Indices']
 
-export default function History({ onBack, onSelect }) {
+export default function History({ user, onBack, onSelect }) {
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState(false)
@@ -62,17 +62,30 @@ export default function History({ onBack, onSelect }) {
   const [purging, setPurging] = useState(false)
   const [purgeAlert, setPurgeAlert] = useState(null)
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { load() }, [user?.email])
 
   const load = async () => {
     setLoading(true); setError(false)
     try {
-      const res = await fetch(`/api/history?t=${Date.now()}`)
+      const userProfile = JSON.parse(localStorage.getItem('user_profile') || '{}')
+      const email = user?.email || userProfile?.email || localStorage.getItem('userEmail') || ''
+      if (!email) {
+        setHistory([])
+        setLoading(false)
+        return
+      }
+      const res = await fetch(`/api/history?email=${encodeURIComponent(email)}&t=${Date.now()}`)
       if (!res.ok) throw new Error()
       const data = await res.json()
-      setHistory(Array.isArray(data) ? [...data].reverse() : [])
-    } catch { setError(true) }
-    finally  { setLoading(false) }
+      const userLogs = Array.isArray(data) 
+        ? data.filter(h => h && h.email && h.email.trim().toLowerCase() === email.trim().toLowerCase())
+        : []
+      setHistory(userLogs.reverse())
+    } catch { 
+      setError(true)
+      setHistory([])
+    }
+    finally { setLoading(false) }
   }
 
   const handlePurge = async () => {

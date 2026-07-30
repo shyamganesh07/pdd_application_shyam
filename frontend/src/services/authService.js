@@ -21,6 +21,30 @@ if (isCapacitor()) {
   }
 }
 
+export const clearUserSessionData = () => {
+  try {
+    localStorage.removeItem('user_profile');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('jwt_token');
+    localStorage.removeItem('user_token');
+    localStorage.removeItem('is_authenticated');
+    localStorage.removeItem('last_trade');
+    localStorage.removeItem('demo_balance');
+    localStorage.removeItem('simulation_history');
+    localStorage.removeItem('trademind_trade_history');
+    localStorage.removeItem('trademind_journal');
+
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const key = localStorage.key(i);
+      if (key && (key.startsWith('api_cache_') || key.startsWith('cache_'))) {
+        localStorage.removeItem(key);
+      }
+    }
+  } catch (e) {
+    console.warn('[AuthService] Error clearing session storage:', e);
+  }
+};
+
 export const authService = {
   async login() {
     try {
@@ -68,13 +92,10 @@ export const authService = {
           console.warn('[Capacitor] GoogleAuth.signOut warning:', e);
         }
       }
-      // Clear all auth-related local storage items
-      localStorage.removeItem('user_profile');
-      localStorage.removeItem('userEmail');
-      localStorage.removeItem('is_authenticated');
-      localStorage.removeItem('demo_balance');
+      clearUserSessionData();
     } catch (error) {
       console.error('Logout error:', error);
+      clearUserSessionData();
       throw error;
     }
   },
@@ -97,6 +118,7 @@ export const authService = {
       
       const data = await response.json();
       if (data && data.user) {
+        clearUserSessionData();
         // Store profile details locally for instant access on next load
         localStorage.setItem('user_profile', JSON.stringify(data.user));
         localStorage.setItem('userEmail', data.user.email);

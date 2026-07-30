@@ -19,10 +19,11 @@ import SimulationHistory from './components/SimulationHistory'
 import Register from './components/Register'
 import Login from './components/Login'
 import VerifyOTP from './components/VerifyOTP'
+import ForgotPassword from './components/ForgotPassword'
 
 import FirebaseLoginScreen from './components/FirebaseLoginScreen'
 import { auth } from './firebase'
-import { authService } from './services/authService'
+import { authService, clearUserSessionData } from './services/authService'
 import { onAuthStateChanged } from 'firebase/auth'
 
 
@@ -127,7 +128,7 @@ function MainHeader({ tab, setTab, username }) {
         <div style={{ fontSize: '1.75rem', fontWeight: 700, fontFamily: 'Space Grotesk' }}>
           {TABS.find(t => t.id === tab)?.label || 'Trading Dashboard'}
         </div>
-        <div style={{ fontSize: '0.85rem', color: 'var(--text-dim)', marginTop: 4 }}>Welcome back, {username || 'Alex'} • Last login: Just now</div>
+        <div style={{ fontSize: '0.85rem', color: 'var(--text-dim)', marginTop: 4 }}>Welcome back, {username || user?.name || user?.username || (user?.email ? user.email.split('@')[0] : 'Trader')} • Last login: Just now</div>
       </div>
 
       <div className="flex gap-4">
@@ -199,11 +200,26 @@ export default function App() {
   const [deferredPrompt, setDeferredPrompt] = useState(null)
   const [showInstallBtn, setShowInstallBtn] = useState(false)
   const [showMoreMenu, setShowMoreMenu] = useState(false)
+  const [activeToast, setActiveToast] = useState(null)
   
   // Firebase Auth states
   const [isCheckingSession, setIsCheckingSession] = useState(true)
   const [authLoading, setAuthLoading] = useState(false)
   const [authError, setAuthError] = useState('')
+
+  useEffect(() => {
+    window.triggerNotification = (toastData) => {
+      setActiveToast({
+        title: toastData.title || '🔔 AI Signal Alert',
+        message: toastData.message || 'New market signal detected',
+        subtext: toastData.subtext || 'Confluence Probability > 90%',
+        timestamp: new Date().toLocaleTimeString()
+      })
+      setTimeout(() => {
+        setActiveToast(null)
+      }, 7000)
+    }
+  }, [])
 
   useEffect(() => {
     // ── Listen to Firebase Auth state changes ──
@@ -214,20 +230,37 @@ export default function App() {
           const syncedUser = await authService.syncWithBackend(idToken)
           setUser(syncedUser)
           setIsAuthenticated(true)
+          localStorage.setItem('is_authenticated', 'true')
         } catch (e) {
           console.error("Firebase auto-login sync error:", e)
+          const isLocalAuth = localStorage.getItem('is_authenticated') === 'true'
           const cached = localStorage.getItem('user_profile')
-          if (cached) {
-            setUser(JSON.parse(cached))
-            setIsAuthenticated(true)
-          } else {
-            setIsAuthenticated(false)
-            setUser(null)
+          if (isLocalAuth && cached) {
+            try {
+              setUser(JSON.parse(cached))
+              setIsAuthenticated(true)
+            } catch {
+              setIsAuthenticated(false)
+              setUser(null)
+            }
           }
         }
       } else {
-        setUser(null)
-        setIsAuthenticated(false)
+        // If Firebase is null, preserve local OTP / credential session if active
+        const isLocalAuth = localStorage.getItem('is_authenticated') === 'true'
+        const cached = localStorage.getItem('user_profile')
+        if (isLocalAuth && cached) {
+          try {
+            setUser(JSON.parse(cached))
+            setIsAuthenticated(true)
+          } catch {
+            setIsAuthenticated(false)
+            setUser(null)
+          }
+        } else {
+          setUser(null)
+          setIsAuthenticated(false)
+        }
       }
       setIsCheckingSession(false)
     })
@@ -245,6 +278,9 @@ export default function App() {
     } else if (path === '/register') {
       setIsAuthenticated(false)
       setAuthView('register')
+    } else if (path === '/forgot-password') {
+      setIsAuthenticated(false)
+      setAuthView('forgot')
     }
 
     const handlePopState = () => {
@@ -255,6 +291,9 @@ export default function App() {
       } else if (currentPath === '/register') {
         setIsAuthenticated(false)
         setAuthView('register')
+      } else if (currentPath === '/forgot-password') {
+        setIsAuthenticated(false)
+        setAuthView('forgot')
       } else {
         const cleanPath = currentPath.replace('/', '')
         if (TABS.some(t => t.id === cleanPath)) {
@@ -330,14 +369,16 @@ export default function App() {
     try {
       setAuthLoading(true)
       await authService.logout()
-      setIsAuthenticated(false)
-      setUser(null)
-      setAuthView('login')
-      setTab('dashboard')
-      window.history.pushState(null, '', '/dashboard')
+      clearUserSessionData()
     } catch (e) {
       console.error("Logout failed:", e)
+      clearUserSessionData()
     } finally {
+      setIsAuthenticated(false)
+      setUser(null)
+      setAuthView('register')
+      setTab('dashboard')
+      window.history.pushState(null, '', '/register')
       setAuthLoading(false)
     }
   }
@@ -345,7 +386,7 @@ export default function App() {
   const renderScreen = () => {
     if (showTrade) return <TradeSetup result={tradeResult} onBack={() => setShowTrade(false)} />
     switch (tab) {
-      case 'dashboard': return <Dashboard isOnline={isOnline} onResult={handleResult} />
+      case 'dashboard': return <Dashboard user={user} isOnline={isOnline} onResult={handleResult} />
       case 'intelligence': return <Intelligence onBack={() => setTab('dashboard')} />
       case 'graph': return <KnowledgeGraph onBack={() => setTab('dashboard')} />
       case 'simulation': return <SimulationLab user={user} onBack={() => setTab('dashboard')} />
@@ -357,82 +398,8 @@ export default function App() {
       case 'crowd': return <CrowdPsychology onBack={() => setTab('dashboard')} />
       case 'evolution': return <Evolution onBack={() => setTab('dashboard')} />
       case 'academy': return <Academy onBack={() => setTab('dashboard')} />
-      case 'history': return <History onBack={() => setTab('dashboard')} onSelect={handleResult} />
-      case 'profile': {
-        if (isAuthenticated && user) {
-          return <Profile onLogout={handleLogout} onProfileUpdate={(updated) => setUser(updated)} />
-        } else {
-          if (authView === 'register') {
-            return (
-              <Register
-                onRegister={(userData) => {
-                  setUser(userData)
-                  setAuthView('login')
-                }}
-                onSwitchToLogin={() => {
-                  setAuthView('login')
-                }}
-              />
-            )
-          } else if (authView === 'login') {
-            return (
-              <Login
-                onLogin={(email) => {
-                  setUserEmail(email)
-                  setAuthView('verify')
-                }}
-                onGoogleLoginSuccess={(syncedUser) => {
-                  setUser(syncedUser)
-                  setIsAuthenticated(true)
-                  if (window.safeSetLocalStorage) {
-                    window.safeSetLocalStorage('is_authenticated', 'true')
-                  } else {
-                    localStorage.setItem('is_authenticated', 'true')
-                  }
-                }}
-                onSwitchToRegister={() => {
-                  setUser(null)
-                  setAuthView('register')
-                }}
-              />
-            )
-          } else {
-            return (
-              <VerifyOTP
-                email={userEmail || user?.email}
-                onVerify={(profile) => {
-                  setIsAuthenticated(true)
-                  if (window.safeSetLocalStorage) {
-                    window.safeSetLocalStorage('is_authenticated', 'true')
-                  } else {
-                    localStorage.setItem('is_authenticated', 'true')
-                  }
-                  if (profile) {
-                    if (window.safeSetLocalStorage) {
-                      window.safeSetLocalStorage('user_profile', JSON.stringify(profile))
-                      window.safeSetLocalStorage('userEmail', profile.email)
-                      if (profile.balance !== undefined) {
-                        window.safeSetLocalStorage('demo_balance', profile.balance.toString())
-                      }
-                    } else {
-                      localStorage.setItem('user_profile', JSON.stringify(profile))
-                      localStorage.setItem('userEmail', profile.email)
-                      if (profile.balance !== undefined) {
-                        localStorage.setItem('demo_balance', profile.balance.toString())
-                      }
-                    }
-                    setUser(profile)
-                  }
-                  setTab('profile')
-                }}
-                onBack={() => {
-                  setAuthView('login')
-                }}
-              />
-            )
-          }
-        }
-      }
+      case 'history': return <History user={user} onBack={() => setTab('dashboard')} onSelect={handleResult} />
+      case 'profile': return <Profile user={user} onLogout={handleLogout} onProfileUpdate={(updated) => setUser(updated)} />
       default: return null
     }
   }
@@ -451,34 +418,56 @@ export default function App() {
     )
   }
 
-  // 2. Render standard email OTP auth screens only if explicitly hitting those paths
-  const isTraditionalAuthPath = window.location.pathname === '/login' || 
-                                window.location.pathname === '/register' ||
-                                window.location.pathname === '/verify'
-
-  if (isTraditionalAuthPath && !isAuthenticated) {
+  // 2. Render standard email OTP auth screens if user is not authenticated
+  if (!isAuthenticated) {
     return (
       <div className="app-container">
         <main className="main-content" style={{ padding: 0 }}>
           <ParticleBG />
-          {(authView === 'register' && !user) ? (
+          {authView === 'register' ? (
             <Register
               onRegister={(userData) => {
-                setUser(userData)
-                setAuthView('login')
-                window.history.pushState(null, '', '/login')
+                // Clear stale API cache from any previous user session
+                for (let i = localStorage.length - 1; i >= 0; i--) {
+                  const k = localStorage.key(i);
+                  if (k && k.startsWith('api_cache_')) localStorage.removeItem(k);
+                }
+                const profile = typeof userData === 'string' ? {
+                  email: userData,
+                  username: userData.split('@')[0],
+                  name: userData.split('@')[0]
+                } : (userData || { email: 'user@trademind.ai', username: 'Trader' })
+                setUser(profile)
+                setIsAuthenticated(true)
+                localStorage.setItem('is_authenticated', 'true')
+                localStorage.setItem('user_profile', JSON.stringify(profile))
+                setTab('dashboard')
+                window.history.pushState(null, '', '/dashboard')
               }}
               onSwitchToLogin={() => {
                 setAuthView('login')
                 window.history.pushState(null, '', '/login')
               }}
             />
-          ) : authView === 'login' ? (
+          ) : (
             <Login
-              onLogin={(email) => {
-                setUserEmail(email)
-                setAuthView('verify')
-                window.history.pushState(null, '', '/verify')
+              onLogin={(userData) => {
+                // Clear stale API cache from any previous user session
+                for (let i = localStorage.length - 1; i >= 0; i--) {
+                  const k = localStorage.key(i);
+                  if (k && k.startsWith('api_cache_')) localStorage.removeItem(k);
+                }
+                const profile = typeof userData === 'string' ? {
+                  email: userData,
+                  username: userData.split('@')[0],
+                  name: userData.split('@')[0]
+                } : (userData || { email: 'user@trademind.ai', username: 'Trader' })
+                setUser(profile)
+                setIsAuthenticated(true)
+                localStorage.setItem('is_authenticated', 'true')
+                localStorage.setItem('user_profile', JSON.stringify(profile))
+                setTab('dashboard')
+                window.history.pushState(null, '', '/dashboard')
               }}
               onGoogleLoginSuccess={(syncedUser) => {
                 setUser(syncedUser)
@@ -488,31 +477,8 @@ export default function App() {
                 window.history.pushState(null, '', '/dashboard')
               }}
               onSwitchToRegister={() => {
-                localStorage.removeItem('user_profile')
-                setUser(null)
                 setAuthView('register')
                 window.history.pushState(null, '', '/register')
-              }}
-            />
-          ) : (
-            <VerifyOTP
-              email={userEmail || user?.email}
-              onVerify={(profile) => {
-                setIsAuthenticated(true)
-                localStorage.setItem('is_authenticated', 'true')
-                if (profile) {
-                  localStorage.setItem('user_profile', JSON.stringify(profile))
-                  localStorage.setItem('userEmail', profile.email)
-                  if (profile.balance !== undefined) {
-                    localStorage.setItem('demo_balance', profile.balance.toString())
-                  }
-                }
-                setTab('dashboard')
-                window.history.pushState(null, '', '/dashboard')
-              }}
-              onBack={() => {
-                setAuthView('login')
-                window.history.pushState(null, '', '/login')
               }}
             />
           )}
@@ -530,7 +496,7 @@ export default function App() {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
           </div>
           <div>
-            <div className="brand-name">TradeMind AI</div>
+            <div className="brand-name">TradeMind</div>
             <div className="brand-sub">Institutional OS</div>
           </div>
         </div>
@@ -559,7 +525,7 @@ export default function App() {
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
               </div>
               <div>
-                <div className="brand-name">TradeMind AI</div>
+                <div className="brand-name">TradeMind</div>
                 <div className="brand-sub">Institutional OS</div>
               </div>
             </div>
@@ -624,16 +590,83 @@ export default function App() {
         )}
       </main>
 
-      {!((window.Capacitor && window.Capacitor.getPlatform && window.Capacitor.getPlatform() !== 'web') || 
-         window.location.origin.startsWith('capacitor://')) && (
-        <VoiceAssistant onCommand={(cmd) => {
-          if (cmd.includes('dashboard')) handleTabChange('dashboard')
-          else if (cmd.includes('dna')) handleTabChange('dna')
-          else if (cmd.includes('intelligence')) handleTabChange('intelligence')
-          else alert(`AI processing: "${cmd}"`)
-        }} />
-      )}
+      <VoiceAssistant onCommand={(cmd) => {
+        if (cmd.includes('dashboard')) handleTabChange('dashboard')
+        else if (cmd.includes('dna')) handleTabChange('dna')
+        else if (cmd.includes('intelligence')) handleTabChange('intelligence')
+        else if (cmd.includes('academy')) handleTabChange('academy')
+        else if (cmd.includes('profile') || cmd.includes('setting')) handleTabChange('profile')
+        else alert(`AI processing: "${cmd}"`)
+      }} />
       <ChatBot />
+
+      {/* GLOBAL FLOATING NEURAL NOTIFICATION TOAST OVERLAY */}
+      {activeToast && (
+        <div style={{
+          position: 'fixed',
+          top: '24px',
+          right: '24px',
+          zIndex: 99999,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '14px',
+          background: 'rgba(15, 23, 42, 0.95)',
+          border: '1.5px solid var(--neon-blue, #00E5FF)',
+          boxShadow: '0 12px 35px rgba(0, 229, 255, 0.35)',
+          borderRadius: '16px',
+          padding: '16px 20px',
+          backdropFilter: 'blur(16px)',
+          maxWidth: '420px',
+          animation: 'slideInRight 0.35s ease-out'
+        }}>
+          <div style={{
+            width: '42px',
+            height: '42px',
+            borderRadius: '12px',
+            background: 'rgba(0, 229, 255, 0.15)',
+            border: '1px solid rgba(0, 229, 255, 0.4)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.4rem',
+            flexShrink: 0
+          }}>
+            🔔
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+              <span style={{ fontSize: '0.68rem', color: 'var(--neon-blue)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                {activeToast.title}
+              </span>
+              <span style={{ fontSize: '0.6rem', color: 'var(--text-dim)' }}>
+                {activeToast.timestamp}
+              </span>
+            </div>
+            <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#F8FAFC', lineHeight: 1.3 }}>
+              {activeToast.message}
+            </div>
+            {activeToast.subtext && (
+              <div style={{ fontSize: '0.73rem', color: '#94A3B8', marginTop: '3px', fontWeight: 500 }}>
+                {activeToast.subtext}
+              </div>
+            )}
+          </div>
+          <button 
+            onClick={() => setActiveToast(null)} 
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#94A3B8',
+              cursor: 'pointer',
+              fontSize: '1.2rem',
+              padding: '4px',
+              marginLeft: '4px'
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
     </div>
   )
 }

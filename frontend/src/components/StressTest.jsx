@@ -19,7 +19,9 @@ export default function StressTest({ onBack }) {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch('/api/stress-test')
+      const userProfile = JSON.parse(localStorage.getItem('user_profile') || '{}')
+      const emailParam = userProfile?.email ? `?email=${encodeURIComponent(userProfile.email)}` : ''
+      const res = await fetch(`/api/stress-test${emailParam}`)
       if (!res.ok) throw new Error('Stress Test Protocol Failed')
       setData(await res.json())
     } catch (e) {
@@ -98,25 +100,27 @@ export default function StressTest({ onBack }) {
             <>
               <div className="flex flex-col items-center mb-8">
                 <div className="text-6xl font-bold font-grotesk text-white mb-2">{data?.survival_probability}</div>
-                <div className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${data?.status === 'Resilient' ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'}`}>
-                  System {data?.status}
+                <div className={`px-3 py-1 rounded-full text-xs font-bold font-grotesk uppercase tracking-wider ${
+                  data?.status === 'Resilient' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'
+                }`}>
+                  {data?.status} Model
                 </div>
               </div>
 
-              <div className="h-48 w-full mb-8">
+              <div className="h-44 w-full mb-6">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData}>
+                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id="stressGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
+                        <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.4}/>
                         <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                    <XAxis dataKey="name" hide />
-                    <YAxis hide domain={[0, 110]} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                    <XAxis dataKey="name" stroke="#64748B" fontSize={10} tickLine={false} axisLine={false} />
+                    <YAxis stroke="#64748B" fontSize={10} tickLine={false} axisLine={false} domain={[40, 100]} />
                     <Tooltip 
-                      contentStyle={{ backgroundColor: '#0d1220', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                      contentStyle={{ background: '#0F172A', borderColor: '#334155', borderRadius: '12px', fontSize: '12px' }}
                       itemStyle={{ color: '#F8FAFC' }}
                     />
                     <Area type="monotone" dataKey="value" stroke="#3B82F6" strokeWidth={3} fill="url(#stressGradient)" dot={{ r: 4, fill: '#3B82F6', strokeWidth: 2, stroke: '#0d1220' }} />
@@ -136,13 +140,13 @@ export default function StressTest({ onBack }) {
           )}
         </div>
 
-        {data?.stock_impacts && data.stock_impacts.length > 0 && (
-          <div className="card glass-morphism-premium mb-6">
-            <div className="flex items-center gap-2 mb-6">
-              <Activity size={18} className="text-blue-500" />
-              <h3 className="font-bold font-grotesk">Analysis Historical Impact</h3>
-            </div>
-            
+        <div className="card glass-morphism-premium mb-6">
+          <div className="flex items-center gap-2 mb-6">
+            <Activity size={18} className="text-blue-500" />
+            <h3 className="font-bold font-grotesk">Analysis Historical Impact</h3>
+          </div>
+          
+          {data?.stock_impacts && data.stock_impacts.length > 0 ? (
             <div className="space-y-4">
               {data.stock_impacts.map((item) => {
                 const isPositive = !item.impact.startsWith('-');
@@ -181,8 +185,12 @@ export default function StressTest({ onBack }) {
                 )
               })}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="p-6 text-center text-text-dim text-xs bg-white/5 rounded-xl border border-white/5">
+              💡 No custom asset scans detected for your account yet. Perform technical analysis on the Dashboard to calculate real-time asset risk impact.
+            </div>
+          )}
+        </div>
 
         <div className="card glass-morphism-premium">
           <div className="flex items-center justify-between mb-6">

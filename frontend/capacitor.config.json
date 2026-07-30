@@ -1,6 +1,6 @@
 {
   "appId": "com.trademind.ai",
-  "appName": "TradeMindAI",
+  "appName": "TradeMind",
   "webDir": "dist",
   "plugins": {
     "GoogleAuth": {
@@ -8,5 +8,8 @@
       "serverClientId": "290508657488-fecc6pimf0tsv4vqdphn6pfd7372j2a5.apps.googleusercontent.com",
       "forceCodeForRefreshToken": true
     }
+  },
+  "server": {
+    "cleartext": true
   }
 }
