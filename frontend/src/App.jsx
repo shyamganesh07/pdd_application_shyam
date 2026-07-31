@@ -41,15 +41,13 @@ function ParticleBG() {
 // ── Voice Assistant Component ──
 function VoiceAssistant({ onCommand }) {
   const [isListening, setIsListening] = useState(false)
-  const getW = () => (typeof window !== 'undefined' ? window.innerWidth : 360)
-  const getH = () => (typeof window !== 'undefined' ? window.innerHeight : 640)
-  const [pos, setPos] = useState({ x: getW() - 80, y: getH() - 156 })
+  const [pos, setPos] = useState({ x: window.innerWidth - 80, y: window.innerHeight - 156 })
   const [dragging, setDragging] = useState(false)
   const dragStart = useRef({ x: 0, y: 0 })
 
   const startListening = () => {
     if (dragging) return // Don't trigger if we were just dragging
-    const SpeechRecognition = typeof window !== 'undefined' ? (window.SpeechRecognition || window.webkitSpeechRecognition) : null
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
     if (!SpeechRecognition) return alert("Voice not supported in this browser.")
 
     const recognition = new SpeechRecognition()
@@ -85,19 +83,17 @@ function VoiceAssistant({ onCommand }) {
     }
     const handleMouseUp = () => setDragging(false)
 
-    if (dragging && typeof window !== 'undefined') {
+    if (dragging) {
       window.addEventListener('mousemove', handleMouseMove)
       window.addEventListener('mouseup', handleMouseUp)
       window.addEventListener('touchmove', handleTouchMove)
       window.addEventListener('touchend', handleMouseUp)
     }
     return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('mousemove', handleMouseMove)
-        window.removeEventListener('mouseup', handleMouseUp)
-        window.removeEventListener('touchmove', handleTouchMove)
-        window.removeEventListener('touchend', handleMouseUp)
-      }
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mouseup', handleMouseUp)
+      window.removeEventListener('touchmove', handleTouchMove)
+      window.removeEventListener('touchend', handleMouseUp)
     }
   }, [dragging])
 
