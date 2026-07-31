@@ -1,0 +1,40 @@
+name: DevSecOps Defensive Security Validation Testing
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  security-tests:
+    name: Execute Security 500+ Test Cases & Generate Excel Summary
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Security Tests Dependencies
+        run: |
+          cd security-tests
+          npm install
+
+      - name: Run Security 500+ Test Suite & Excel Generator
+        run: |
+          cd security-tests
+          npm test
+
+      - name: Upload Excel & CSV Security Test Reports Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Security_E2E_500_Test_Results
+          path: security-tests/reports/
+          retention-days: 30
