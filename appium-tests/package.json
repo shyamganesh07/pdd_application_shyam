@@ -1,0 +1,17 @@
+{
+  "name": "pdd-pwa-appium-tests",
+  "version": "1.0.0",
+  "description": "Appium E2E Mobile App Automation Testing Framework for App Frontend (500+ Unique Test Cases)",
+  "type": "module",
+  "main": "tests/appium-tests.js",
+  "scripts": {
+    "test": "mocha tests/appium-tests.js --timeout 180000 --exit",
+    "test:appium": "mocha tests/appium-tests.js --timeout 180000 --exit",
+    "generate:excel": "node generate_excel.js"
+  },
+  "dependencies": {
+    "chai": "^5.1.1",
+    "exceljs": "^4.4.0",
+    "mocha": "^10.4.0"
+  }
+}
