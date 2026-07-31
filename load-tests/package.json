@@ -1,0 +1,17 @@
+{
+  "name": "pdd-pwa-load-tests",
+  "version": "1.0.0",
+  "description": "Load & Performance Testing Framework for TradeMind Backend & Frontend (500+ Unique Test Cases)",
+  "type": "module",
+  "main": "tests/load-tests.js",
+  "scripts": {
+    "test": "mocha tests/load-tests.js --timeout 180000 --exit",
+    "test:load": "mocha tests/load-tests.js --timeout 180000 --exit",
+    "generate:excel": "node generate_excel.js"
+  },
+  "dependencies": {
+    "chai": "^5.1.1",
+    "exceljs": "^4.4.0",
+    "mocha": "^10.4.0"
+  }
+}
