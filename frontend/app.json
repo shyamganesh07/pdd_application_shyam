@@ -4,10 +4,10 @@
     "slug": "trademind",
     "version": "2.0.0",
     "orientation": "portrait",
-    "icon": "./public/favicon.ico",
+    "icon": "./public/icons/icon-192.png",
     "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./public/favicon.ico",
+      "image": "./public/icons/icon-192.png",
       "resizeMode": "contain",
       "backgroundColor": "#090d16"
     },
@@ -20,13 +20,13 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./public/favicon.ico",
+        "foregroundImage": "./public/icons/icon-192.png",
         "backgroundColor": "#090d16"
       },
       "package": "com.trademind.app"
     },
     "web": {
-      "favicon": "./public/favicon.ico",
+      "favicon": "./public/icons/icon-192.png",
       "bundler": "metro"
     },
     "scheme": "trademind"
