@@ -1,0 +1,40 @@
+name: Selenium E2E Web Frontend Test Automation
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  selenium-e2e-tests:
+    name: Execute Selenium 500+ Test Cases & Generate Excel Summary
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Selenium Tests Dependencies
+        run: |
+          cd selenium-tests
+          npm install
+
+      - name: Run Selenium Web E2E 500+ Test Suite & Excel Generator
+        run: |
+          cd selenium-tests
+          npm test
+
+      - name: Upload Excel & CSV Test Reports Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Selenium_E2E_500_Test_Results
+          path: selenium-tests/reports/
+          retention-days: 30
