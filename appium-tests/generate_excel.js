@@ -182,7 +182,7 @@ export const APPIUM_MODULES = [
             "Local Storage Native SQLite Database Sync",
             "Mobile Network Status Listener (WiFi to 5G Switch)",
             "Device Low Battery System Event Handler Trigger",
-            "Screen Orientation Change Listener (Portrait vs Landscape)",
+            "Device Accelerometer Sensor Orientation Change Listener (Portrait vs Landscape)",
             "Device Hardware Volume Button Listener Interceptor",
             "Capacitor Preferences LocalStorage Key-Value Store",
             "Mobile Device Motion Accelerometer Sensor Dispatch",
