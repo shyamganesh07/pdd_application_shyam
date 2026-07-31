@@ -1,0 +1,17 @@
+{
+  "name": "pdd-pwa-security-tests",
+  "version": "1.0.0",
+  "description": "Defensive Security Validation & Compliance Test Suite for TradeMind PWA (500+ Unique Security Test Cases)",
+  "type": "module",
+  "main": "tests/security-tests.js",
+  "scripts": {
+    "test": "mocha tests/security-tests.js --timeout 180000 --exit",
+    "test:security": "mocha tests/security-tests.js --timeout 180000 --exit",
+    "generate:excel": "node generate_excel.js"
+  },
+  "dependencies": {
+    "chai": "^5.1.1",
+    "exceljs": "^4.4.0",
+    "mocha": "^10.4.0"
+  }
+}
